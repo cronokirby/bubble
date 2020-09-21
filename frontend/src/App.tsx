@@ -1,6 +1,6 @@
 import React from 'react';
 
-function App() {
+export default function App() {
   return (
     <div>
       <h1 className="font-sans bg-red-300">
@@ -13,5 +13,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
