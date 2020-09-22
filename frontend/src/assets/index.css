@@ -36,4 +36,15 @@
 
 @tailwind components;
 
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  font-size: 18px;
+  @apply font-sans;
+  @apply bg-blue-100;
+}
+
 @tailwind utilities;

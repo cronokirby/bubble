@@ -1,15 +1,13 @@
 import React from 'react';
+import Block from './Block';
 
 export default function App() {
   return (
-    <div>
-      <h1 className="font-sans bg-red-300">
-        <span role="img" aria-label="Smiley Face">
-          🐬
-        </span>{' '}
-        Hello
-      </h1>
-      <p className="font-mono bg-green-400">What's up?</p>
+    <div className="container w-1/2 mx-auto text-gray-900">
+      <Block />
+      <Block />
+      <Block />
+      <Block />
     </div>
   );
 }
