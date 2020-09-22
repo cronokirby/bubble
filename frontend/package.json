@@ -1,46 +1,20 @@
 {
   "name": "bubble-frontend",
   "version": "0.1.0",
-  "private": true,
+  "description": "Notes",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=development parcel src/index.html --open --port 3000"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^8.2.0",
+    "bsb-js": "^1.1.7",
+    "parcel-bundler": "^1.12.4"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
-  },
-  "scripts": {
-    "start": "npm run watch:css && react-scripts start",
-    "build": "npm run build:css && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build:css": "postcss src/assets/index.css -o src/assets/main.css",
-    "watch:css": "postcss src/assets/index.css -o src/assets/main.css"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@types/node": "^14.11.1",
-    "@types/react": "^16.9.49",
-    "@types/react-dom": "^16.9.8",
-    "autoprefixer": "^9.8.6",
-    "postcss": "^8.0.6",
-    "postcss-cli": "^7.1.2",
-    "tailwindcss": "^1.8.10",
-    "typescript": "^4.0.3"
+    "reason-react": "^0.9.1"
   }
 }
