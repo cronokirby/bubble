@@ -6,13 +6,16 @@
   "scripts": {
     "start": "NODE_ENV=development parcel src/index.html --open --port 3000",
     "build": "NODE_ENV=production parcel build src/index.html",
-    "test": "bsb -make-world && jest"
+    "test": "jest"
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^26.0.14",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
+    "jest": "^26.4.2",
     "parcel-bundler": "^1.12.4",
+    "ts-jest": "^26.4.0",
     "typescript": "^4.0.3"
   },
   "dependencies": {
