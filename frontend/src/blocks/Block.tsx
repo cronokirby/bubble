@@ -17,7 +17,7 @@ function format(tagged: Tagged[]): string {
         case Tag.Italic:
           return `<i>${x.text}</i>`;
         case Tag.Math:
-          return `<span style="color:blue">${x.text}</span>`
+          return `<span style="color:blue">${x.text}</span>`;
         case Tag.Plain:
           return x.text;
       }
