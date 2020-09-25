@@ -4,7 +4,7 @@ type Token = string;
  * The class of special characters is all of those that can't appear in markdown
  */
 function isSpecial(c: string) {
-  return "***$".includes(c);
+  return "***$\n".includes(c);
 }
 
 /**
@@ -63,6 +63,11 @@ class Lexer {
           tokens.push("$");
           break;
         }
+        case "\n": {
+          this.advance();
+          tokens.push("\n");
+          break;
+        }
         default: {
           tokens.push(this.curr());
           this.advance();
@@ -94,6 +99,10 @@ export enum Tag {
    * Marks a certain span of text as being math.
    */
   Math,
+  /**
+   * Marks an empty span of text as being a line break
+   */
+  LineBreak,
   /**
    * Marks a certain span of text as having no formatting at all
    */
@@ -200,6 +209,11 @@ class Parser {
         case "$": {
           this.advance();
           tagged.push(this.until("$", Tag.Math));
+          break;
+        }
+        case "\n": {
+          this.advance();
+          tagged.push({ tag: Tag.LineBreak, text: "" });
           break;
         }
         default: {
