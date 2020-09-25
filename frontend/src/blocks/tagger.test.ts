@@ -16,6 +16,11 @@ test("parsing bold", () => {
   expect(parse("**BB**")).toEqual([{ tag: Tag.Bold, text: "BB" }]);
 });
 
+test("parsing math", () => {
+  expect(parse("$x + 2$")).toEqual([{ tag: Tag.Math, text: "x + 2" }]);
+  expect(parse("$x* **$")).toEqual([{ tag: Tag.Math, text: "x* **" }]);
+});
+
 test("parsing mixed", () => {
   expect(parse("An *italic* and **bold**")).toEqual([
     { tag: Tag.Plain, text: "An " },

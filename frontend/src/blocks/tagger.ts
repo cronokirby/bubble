@@ -3,7 +3,7 @@
 /**
  * The type of token that exists.
  */
-type TokenType = "*" | "**" | "span";
+type TokenType = "*" | "**" | "$" | "span";
 
 /**
  * An isolated span token as a separate type.
@@ -19,13 +19,13 @@ type TokenSpan = { type: "span"; span: string };
  * The idea is that a token is either `*` or `**` delimiting the start or end of
  * span of italic or bold text in markdown, or a piece of normal text.
  */
-type Token = { type: "*" } | { type: "**" } | TokenSpan;
+type Token = { type: "*" } | { type: "**" } | { type: "$" } | TokenSpan;
 
 /**
  * The class of special characters is all of those that can't appear in markdown
  */
 function isSpecial(c: string) {
-  return "*".includes(c);
+  return "*$".includes(c);
 }
 
 /**
@@ -95,6 +95,11 @@ class Lexer {
           }
           break;
         }
+        case "$": {
+          this.advance();
+          tokens.push({ type: "$" });
+          break;
+        }
         default: {
           const span = this.span();
           tokens.push({ type: "span", span });
@@ -122,6 +127,10 @@ export enum Tag {
    * Marks a certain span of text as italic text
    */
   Italic,
+  /**
+   * Marks a certain span of text as being math.
+   */
+  Math,
   /**
    * Marks a certain span of text as having no formatting at all
    */
@@ -236,6 +245,21 @@ class Parser {
     return t.span;
   }
 
+  private mathSpan(): string {
+    let text = "";
+    while (this.match("*", "**", "span")) {
+      const t = this.prev();
+      if (t.type == "span") {
+        text += t.span;
+      } else if (t.type == "*") {
+        text += "*";
+      } else if (t.type == "**") {
+        text += "**";
+      }
+    }
+    return text;
+  }
+
   /**
    * Parse out a single tagged piece of text
    */
@@ -248,6 +272,10 @@ class Parser {
       const text = this.span();
       this.expect("**");
       return { tag: Tag.Bold, text };
+    } else if (this.match("$")) {
+      const text = this.mathSpan();
+      this.expect("$");
+      return { tag: Tag.Math, text };
     } else if (this.match("span")) {
       const t = this.prev() as TokenSpan;
       return { tag: Tag.Plain, text: t.span };
