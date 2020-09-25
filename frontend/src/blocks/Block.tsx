@@ -115,6 +115,7 @@ export default class Block extends React.Component {
         onChange={this.handleChange.bind(this)}
         onBlur={this.onBlur.bind(this)}
         onFocus={this.onFocus.bind(this)}
+        tagName="span"
       />
     );
   }

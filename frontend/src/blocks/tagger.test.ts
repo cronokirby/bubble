@@ -29,13 +29,3 @@ test("parsing mixed", () => {
     { tag: Tag.Bold, text: "bold" },
   ]);
 });
-
-test("parsing line breaks", () => {
-  expect(parse("A\nnew\nline")).toEqual([
-    { tag: Tag.Plain, text: "A" },
-    { tag: Tag.LineBreak, text: "" },
-    { tag: Tag.Plain, text: "new" },
-    { tag: Tag.LineBreak, text: "" },
-    { tag: Tag.Plain, text: "line" },
-  ]);
-});
