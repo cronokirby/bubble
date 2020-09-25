@@ -1,31 +1,10 @@
-// IMPROVE: Maybe we can generate this type by looking at the available keys
-// inside of the Token type?
-/**
- * The type of token that exists.
- */
-type TokenType = "*" | "**" | "$" | "span";
-
-/**
- * An isolated span token as a separate type.
- *
- * This is useful to have as a separate type so that we can cast to this variant.
- * Casting to this variant is desired to be able to extract out the span data.
- */
-type TokenSpan = { type: "span"; span: string };
-
-/**
- * Represents a kind of token produced by our lexer.
- *
- * The idea is that a token is either `*` or `**` delimiting the start or end of
- * span of italic or bold text in markdown, or a piece of normal text.
- */
-type Token = { type: "*" } | { type: "**" } | { type: "$" } | TokenSpan;
+type Token = string;
 
 /**
  * The class of special characters is all of those that can't appear in markdown
  */
 function isSpecial(c: string) {
-  return "*$".includes(c);
+  return "***$".includes(c);
 }
 
 /**
@@ -62,22 +41,6 @@ class Lexer {
   }
 
   /**
-   * Lex out a string consisting of normal characters in markdown
-   */
-  private span(): string {
-    let res = "";
-    while (!this.done()) {
-      let curr = this.curr();
-      if (isSpecial(curr)) {
-        break;
-      }
-      res += curr;
-      this.advance();
-    }
-    return res;
-  }
-
-  /**
    * Run the lexer, genera
    */
   lex(): Token[] {
@@ -89,20 +52,20 @@ class Lexer {
           this.advance();
           if (this.curr() == "*") {
             this.advance();
-            tokens.push({ type: "**" });
+            tokens.push("**");
           } else {
-            tokens.push({ type: "*" });
+            tokens.push("*");
           }
           break;
         }
         case "$": {
           this.advance();
-          tokens.push({ type: "$" });
+          tokens.push("$");
           break;
         }
         default: {
-          const span = this.span();
-          tokens.push({ type: "span", span });
+          tokens.push(this.curr());
+          this.advance();
           break;
         }
       }
@@ -160,7 +123,8 @@ class Parser {
    * @return the current token
    */
   private curr(): Token {
-    return this.tokens[this.i];
+    const c = this.tokens[this.i];
+    return c;
   }
 
   /**
@@ -194,99 +158,56 @@ class Parser {
     return this.i >= this.tokens.length;
   }
 
-  /**
-   * Check whether or not the current token matches a certain type
-   *
-   * @param t the type of token to look for
-   * @return true if the current token matches this type
-   */
-  private check(t: TokenType): boolean {
-    if (this.done()) {
-      return false;
-    }
-    return this.curr().type == t;
-  }
-
-  /**
-   * Try and match one of a type of token, and advance the parser if so
-   *
-   * @param ts the different tokens we want to match with
-   * @return true if one of the options matched
-   */
-  private match(...ts: TokenType[]) {
-    for (let t of ts) {
-      if (this.check(t)) {
-        this.advance();
-        return true;
+  private plain() {
+    let res = "";
+    while (!this.done()) {
+      if (isSpecial(this.curr())) {
+        break;
       }
+      res += this.curr();
+      this.advance();
     }
-
-    return false;
+    return res;
   }
 
-  /**
-   * Expect to see a given token type, or throw an exception
-   *
-   * @param t the type of token to match
-   * @throws an Error if we didn't see that type of token
-   */
-  private expect(t: TokenType) {
-    if (!this.match(t)) {
-      throw new Error(`Expected: ${t}`);
-    }
-  }
-
-  /**
-   * Try and parse a plain span of text
-   */
-  private span(): string {
-    this.expect("span");
-    const t = this.prev() as TokenSpan;
-    return t.span;
-  }
-
-  private mathSpan(): string {
+  private until(token: Token, tag: Tag): Tagged {
     let text = "";
-    while (this.match("*", "**", "span")) {
-      const t = this.prev();
-      if (t.type == "span") {
-        text += t.span;
-      } else if (t.type == "*") {
-        text += "*";
-      } else if (t.type == "**") {
-        text += "**";
+    while (!this.done()) {
+      if (this.curr() === token) {
+        this.advance();
+        return { tag, text };
       }
+      text += this.curr();
+      this.advance();
     }
-    return text;
-  }
-
-  /**
-   * Parse out a single tagged piece of text
-   */
-  private expr(): Tagged {
-    if (this.match("*")) {
-      const text = this.span();
-      this.expect("*");
-      return { tag: Tag.Italic, text };
-    } else if (this.match("**")) {
-      const text = this.span();
-      this.expect("**");
-      return { tag: Tag.Bold, text };
-    } else if (this.match("$")) {
-      const text = this.mathSpan();
-      this.expect("$");
-      return { tag: Tag.Math, text };
-    } else if (this.match("span")) {
-      const t = this.prev() as TokenSpan;
-      return { tag: Tag.Plain, text: t.span };
-    }
-    throw new Error("Failed to find any matches");
+    return { tag: Tag.Plain, text: token + text };
   }
 
   parse() {
     const tagged: Tagged[] = [];
     while (!this.done()) {
-      tagged.push(this.expr());
+      switch (this.curr()) {
+        case "*": {
+          this.advance();
+          tagged.push(this.until("*", Tag.Italic));
+          break;
+        }
+        case "**": {
+          this.advance();
+          tagged.push(this.until("**", Tag.Bold));
+          break;
+        }
+        case "$": {
+          this.advance();
+          tagged.push(this.until("$", Tag.Math));
+          break;
+        }
+        default: {
+          const text = this.plain();
+          tagged.push({ tag: Tag.Plain, text });
+          break;
+        }
+      }
     }
     return tagged;
   }
@@ -308,14 +229,9 @@ class Parser {
  * @param text the text we want to parse
  * @return an array of tagged pieces of text
  */
-export function parse(text: string): Tagged[] {
+export function parse(text: string) {
   const lexer = new Lexer(text);
   const tokens = lexer.lex();
   const parser = new Parser(tokens);
-  try {
-    return parser.parse();
-  } catch (e) {
-    console.warn(e);
-    return [{ tag: Tag.Plain, text }];
-  }
+  return parser.parse();
 }

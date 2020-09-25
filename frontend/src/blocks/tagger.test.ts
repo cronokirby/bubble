@@ -1,8 +1,8 @@
 import { Tag, parse } from "./tagger";
 
 test("parsing plain sentences", () => {
-  expect(parse("hello\nworld!")).toEqual([
-    { tag: Tag.Plain, text: "hello\nworld!" },
+  expect(parse("hello world!")).toEqual([
+    { tag: Tag.Plain, text: "hello world!" },
   ]);
   expect(parse("ABC")).toEqual([{ tag: Tag.Plain, text: "ABC" }]);
 });
