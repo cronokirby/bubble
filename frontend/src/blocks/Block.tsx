@@ -1,5 +1,6 @@
 import React from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
+import katex from "katex";
 import { Tagged, Tag, parse } from "./tagger";
 
 /**
@@ -17,7 +18,7 @@ function format(tagged: Tagged[]): string {
         case Tag.Italic:
           return `<i>${x.text}</i>`;
         case Tag.Math:
-          return `<span style="color:blue">${x.text}</span>`;
+          return katex.renderToString(x.text);
         case Tag.Plain:
           return x.text;
       }
