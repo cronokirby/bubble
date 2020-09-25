@@ -27,4 +27,8 @@
 @tailwind components;
 /** purgecss end ignore */
 
+html {
+  font-size: 18px;
+}
+
 @tailwind utilities;
