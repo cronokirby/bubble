@@ -37,7 +37,6 @@ html {
   @apply shadow-inner;
   @apply bg-gray-200;
   @apply px-1;
-  @apply py-1;
   font-size: 0.9em;
   
 }
