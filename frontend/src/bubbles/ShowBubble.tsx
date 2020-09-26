@@ -19,6 +19,8 @@ function format(tagged: Tagged[]): string {
           return `<i>${x.text}</i>`;
         case Tag.Math:
           return katex.renderToString(x.text);
+        case Tag.Code:
+          return `<code class="inline-code" spellcheck="false">${x.text}</code>`;
         case Tag.Plain:
           return x.text;
       }

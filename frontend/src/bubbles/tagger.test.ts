@@ -21,6 +21,10 @@ test("parsing math", () => {
   expect(parse("$x* **$")).toEqual([{ tag: Tag.Math, text: "x* **" }]);
 });
 
+test("parsing_code", () => {
+  expect(parse("`x + 2`")).toEqual([{ tag: Tag.Code, text: "x + 2" }]);
+});
+
 test("parsing mixed", () => {
   expect(parse("An *italic* and **bold**")).toEqual([
     { tag: Tag.Plain, text: "An " },
