@@ -37,16 +37,16 @@ function transform(text: string): string {
 }
 
 /**
- * Represents the current State of the Block component.
+ * Represents the current State of the Bubble component.
  *
- * The idea is that the Block is either being edited, in which case we want to display
+ * The idea is that the Bubble is either being edited, in which case we want to display
  * the raw text, or is not being edited, in which case we want to display the
- * formatted HTML instead. The Block thus needs to keep track of its raw text,
+ * formatted HTML instead. The Bubble thus needs to keep track of its raw text,
  * its formatted HTML, and which state it's in.
  */
 interface State {
   /**
-   * The raw string composing this block, without any formatting.
+   * The raw string composing this bubble, without any formatting.
    */
   raw: string;
   /**
@@ -58,19 +58,19 @@ interface State {
    */
   transformed: string;
   /**
-   * True if the block is not currently being edited.
+   * True if the bubble is not currently being edited.
    */
   static: boolean;
 }
 
 /**
- * Represents an editable Block of text.
+ * Represents an editable Bubble of text.
  *
- * Blocks allow formatting in a Markdown-esque syntax, and will display the
+ * Bubbles allow formatting in a Markdown-esque syntax, and will display the
  * formatted version of the text when focus is lost. When focus is re-gained,
  * the raw representation will be displayed instead.
  */
-export default class Block extends React.Component {
+export default class ShowBubble extends React.Component {
   private ref: React.RefObject<HTMLElement>;
   public state: State;
 
@@ -91,7 +91,7 @@ export default class Block extends React.Component {
   }
 
   // The user has given focus to something else, so we can transform
-  // the text they've edited, and declare this Block to now be static.
+  // the text they've edited, and declare this Bubble to now be static.
   private onBlur() {
     this.setState({
       ...this.state,
@@ -100,7 +100,7 @@ export default class Block extends React.Component {
     });
   }
 
-  // The user wants to start editing, so this Block should no longer be static
+  // The user wants to start editing, so this Bubble should no longer be static
   private onFocus() {
     this.setState({ ...this.state, static: false });
   }
