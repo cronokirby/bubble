@@ -137,9 +137,24 @@ class Lexer {
   }
 }
 
-type BubbleInner = string;
+/**
+ * Represents the inside of a Bubble.
+ *
+ * Right now the only supported type is just a piece of text.
+ */
+export type BubbleInner = string;
 
-interface Bubble {
+/**
+ * Represents a Bubble / Block.
+ *
+ * A bubble has the inner text / element composing it, as well as a potential list of
+ * children, which are simply references to other Bubbles, through their IDs.
+ *
+ * In text, this is represented as `(bubble "text" 0x12 0x1F)` where we have a
+ * lisp-esque function call, with a string litteral as the first argument, and then all the following
+ * arguments as references to other bubbles.
+ */
+export interface Bubble {
   inner: BubbleInner;
   children: BubbleID[];
 }
@@ -207,6 +222,14 @@ class Parser {
   }
 }
 
+/**
+ * Parse a textual representation of a Bubble into a usable representation.
+ *
+ * For information on what this representation looks like, see the Bubble type.
+ *
+ * @param text the string to aprse
+ * @return null if we failed to parse, otherwise a Bubble
+ */
 export function parse(text: string): Bubble | null {
   try {
     const lexer = new Lexer(text);
