@@ -18,3 +18,15 @@ export interface RemoteSea {
    */
   lookup(id: BubbleID): Promise<string | null>;
 }
+
+/**
+ * An implementation of Remote Sea that does nothing.
+ *
+ * This is mainly useful for testing or prototyping, when you want to
+ * not have any dependencies on a remote server.
+ */
+export class NoRemoteSea implements RemoteSea {
+  async lookup(_id: BubbleID) {
+    return null;
+  }
+}
