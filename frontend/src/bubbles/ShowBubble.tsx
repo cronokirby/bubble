@@ -121,6 +121,7 @@ export default class ShowBubble extends React.Component {
         onChange={this.handleChange.bind(this)}
         onBlur={this.onBlur.bind(this)}
         onFocus={this.onFocus.bind(this)}
+        style={{display: 'block'}}
         tagName="span"
       />
     );
