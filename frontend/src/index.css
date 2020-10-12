@@ -1,4 +1,5 @@
 /** purgecss start ignore */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap");
 
 @font-face {
   font-family: "JetBrainsMono";
@@ -28,6 +29,8 @@
 /** purgecss end ignore */
 
 html {
+  @apply font-serif;
+  @apply bg-gray-100;
   font-size: 18px;
 }
 

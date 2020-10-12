@@ -3,6 +3,10 @@ import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import katex from "katex";
 import { Tagged, Tag, parse } from "./tagger";
 
+function unescapeHTML(text: string): string {
+  return text.replaceAll('&amp;', '&').replaceAll('<br>', '\n');
+}
+
 /**
  * Format tagged segments of text into HTML
  *
@@ -18,7 +22,7 @@ function format(tagged: Tagged[]): string {
         case Tag.Italic:
           return `<i>${x.text}</i>`;
         case Tag.Math:
-          return katex.renderToString(x.text);
+          return katex.renderToString(unescapeHTML(x.text));
         case Tag.Code:
           return `<code class="inline-code" spellcheck="false">${x.text}</code>`;
         case Tag.Plain:

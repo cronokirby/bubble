@@ -6,6 +6,7 @@ module.exports = {
   purge: ["./src/**/*"],
   theme: {
     fontFamily: {
+      serif: ["Noto Serif", "Georgia", "Cambria", "Times New Roman", "serif"],
       mono: ["JetBrainsMono", "monospace"],
       sans: [
         "TheFiraFiraSans",
