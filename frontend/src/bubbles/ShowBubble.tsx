@@ -4,7 +4,7 @@ import katex from "katex";
 import { Tagged, Tag, parse } from "./tagger";
 
 function unescapeHTML(text: string): string {
-  return text.replaceAll('&amp;', '&').replaceAll('<br>', '\n');
+  return text.replaceAll("&amp;", "&").replaceAll("<br>", "\n");
 }
 
 /**
@@ -69,6 +69,11 @@ interface State {
   static: boolean;
 }
 
+interface Props {
+  starting: string;
+  onModify(str: string): void;
+}
+
 /**
  * Represents an editable Bubble of text.
  *
@@ -76,16 +81,16 @@ interface State {
  * formatted version of the text when focus is lost. When focus is re-gained,
  * the raw representation will be displayed instead.
  */
-export default class ShowBubble extends React.Component {
+export default class ShowBubble extends React.Component<Props> {
   private ref: React.RefObject<HTMLElement>;
   public state: State;
 
-  constructor(props: {}) {
+  constructor(props: Props) {
     super(props);
 
     this.ref = React.createRef();
 
-    const raw = "Edit *Me*!";
+    const raw = props.starting;
     this.state = { raw, transformed: transform(raw), static: true };
   }
 
@@ -104,6 +109,7 @@ export default class ShowBubble extends React.Component {
       static: true,
       transformed: transform(this.state.raw),
     });
+    this.props.onModify(this.state.raw);
   }
 
   // The user wants to start editing, so this Bubble should no longer be static
@@ -121,7 +127,7 @@ export default class ShowBubble extends React.Component {
         onChange={this.handleChange.bind(this)}
         onBlur={this.onBlur.bind(this)}
         onFocus={this.onFocus.bind(this)}
-        style={{display: 'block'}}
+        style={{ display: "block" }}
         tagName="span"
       />
     );
