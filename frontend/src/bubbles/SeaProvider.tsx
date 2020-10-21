@@ -56,10 +56,10 @@ const SeaProvider: React.FunctionComponent<{}> = (props) => {
         fromString("0x0"),
         {
           inner: "Null Page",
-          children: [fromString("0x1"), fromString("0x2")],
+          children: [fromString("0x1")],
         },
       ],
-      [fromString("0x1"), { inner: "The first Child", children: [] }],
+      [fromString("0x1"), { inner: "The first Child", children: [fromString("0x2")] }],
       [fromString("0x2"), { inner: "The second Child", children: [] }]
     )
   );

@@ -6,13 +6,14 @@ import ShowBubble from "./ShowBubble";
 
 interface Props {
   id: BubbleID;
+  title?: boolean;
 }
 
 function Loading() {
   return <div>...</div>;
 }
 
-export default function BubbleNode({ id }: Props) {
+export default function BubbleNode({ id, title }: Props) {
   const sea = useSea();
   const [bubble, setBubble] = React.useState(null as Bubble | null);
 
@@ -28,11 +29,13 @@ export default function BubbleNode({ id }: Props) {
     ));
     return (
       <div>
-        <ShowBubble
-          starting={bubble.inner}
-          onModify={(s) => sea.modifyInner(id, s)}
-        />
-        <div className="ml-4">{children}</div>
+        <div className={title ? "text-3xl font-bold mb-6" : ""}>
+          <ShowBubble
+            starting={bubble.inner}
+            onModify={(s) => sea.modifyInner(id, s)}
+          />
+        </div>
+        <div className={title ? "" : "ml-4"}>{children}</div>
       </div>
     );
   } else {
