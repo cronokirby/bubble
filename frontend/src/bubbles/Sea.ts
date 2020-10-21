@@ -10,7 +10,7 @@ import { RemoteSea } from "./RemoteSea";
  * it into the Cache. The idea is that we want to be able to update the cache
  * as soon as we see some value for the first time.
  */
-interface LookupResult {
+export interface LookupResult {
   bubble?: Bubble;
   newSea?: Sea;
 }
@@ -22,7 +22,7 @@ interface LookupResult {
  * behind this centralized interface is to vastly simplify and abstract our
  * interaction with bubbles.
  */
-class Sea {
+export class Sea {
   private constructor(
     private remote: RemoteSea,
     private map: Map<BubbleID, Bubble>
@@ -34,7 +34,7 @@ class Sea {
    * @param remote the remote sea for external lookups
    * @param pairs the initial bubbles we know about
    */
-  using(remote: RemoteSea, ...pairs: [BubbleID, Bubble][]): Sea {
+  static using(remote: RemoteSea, ...pairs: [BubbleID, Bubble][]): Sea {
     let map: Map<BubbleID, Bubble> = Map(pairs);
     return new Sea(remote, map);
   }
@@ -80,10 +80,10 @@ class Sea {
    * @param inner the new inner contents
    */
   async modifyInner(id: BubbleID, inner: BubbleInner): Promise<Sea> {
-    const bubble = await this.lookup(id);
-    const newSea = bubble.newSea ?? this;
-    if (bubble.bubble) {
-      return newSea.modify(id, { ...bubble.bubble, inner });
+    const res = await this.lookup(id);
+    const newSea = res.newSea ?? this;
+    if (res.bubble) {
+      return newSea.modify(id, { ...res.bubble, inner });
     } else {
       return newSea.modify(id, { inner, children: [] });
     }
