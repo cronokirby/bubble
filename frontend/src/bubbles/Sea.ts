@@ -96,7 +96,7 @@ export class Sea {
    * @param from the ID of the bubble we want to remove it from
    */
   async unlink(id: BubbleID, from: BubbleID): Promise<Sea> {
-    let { bubble, newSea } = await this.lookup(id);
+    let { bubble, newSea } = await this.lookup(from);
     newSea = newSea ?? this;
     if (!bubble) {
       return newSea;
@@ -116,7 +116,7 @@ export class Sea {
    * @param to the ID of the new parent Bubble
    */
   async link(id: BubbleID, to: BubbleID): Promise<Sea> {
-    let { bubble, newSea } = await this.lookup(id);
+    let { bubble, newSea } = await this.lookup(to);
     newSea = newSea ?? this;
     if (!bubble) {
       return newSea;
