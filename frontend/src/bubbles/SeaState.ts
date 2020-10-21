@@ -12,17 +12,18 @@ import { RemoteSea } from "./RemoteSea";
  */
 export interface LookupResult {
   bubble?: Bubble;
-  newSea?: Sea;
+  newSea?: SeaState;
 }
 
 /**
- * A class providing us access to the "Sea of Bubbles".
+ * A class providing a cache stateful wrapper over a Remote Sea.
  *
- * We use this to moderate our lookups and modifications of bubbles. The idea
- * behind this centralized interface is to vastly simplify and abstract our
- * interaction with bubbles.
+ * The idea is that we store this class in a React state hook, or something like that,
+ * so that we can manage the state we keep about the sea, and cached nodes. We want
+ * to avoid interacting with this interface directly, because it's a bit cumbersome,
+ * since it always return a new immutable copy if anything changed.
  */
-export class Sea {
+export class SeaState {
   private constructor(
     private remote: RemoteSea,
     private map: Map<BubbleID, Bubble>
@@ -34,9 +35,9 @@ export class Sea {
    * @param remote the remote sea for external lookups
    * @param pairs the initial bubbles we know about
    */
-  static using(remote: RemoteSea, ...pairs: [BubbleID, Bubble][]): Sea {
+  static using(remote: RemoteSea, ...pairs: [BubbleID, Bubble][]): SeaState {
     let map: Map<BubbleID, Bubble> = Map(pairs);
-    return new Sea(remote, map);
+    return new SeaState(remote, map);
   }
 
   /**
@@ -56,7 +57,7 @@ export class Sea {
     if (maybeBubble === null) {
       return {};
     }
-    const newSea = new Sea(this.remote, this.map.set(id, maybeBubble));
+    const newSea = new SeaState(this.remote, this.map.set(id, maybeBubble));
     return { bubble: maybeBubble, newSea };
   }
 
@@ -66,9 +67,9 @@ export class Sea {
    * @param id the ID of the bubble to modify or create
    * @param bubble the new contents to provide
    */
-  async modify(id: BubbleID, bubble: Bubble): Promise<Sea> {
+  async modify(id: BubbleID, bubble: Bubble): Promise<SeaState> {
     const newMap = this.map.set(id, bubble);
-    return new Sea(this.remote, newMap);
+    return new SeaState(this.remote, newMap);
   }
 
   /**
@@ -79,7 +80,7 @@ export class Sea {
    * @param id the identifier of the bubble to modify
    * @param inner the new inner contents
    */
-  async modifyInner(id: BubbleID, inner: BubbleInner): Promise<Sea> {
+  async modifyInner(id: BubbleID, inner: BubbleInner): Promise<SeaState> {
     const res = await this.lookup(id);
     const newSea = res.newSea ?? this;
     if (res.bubble) {
@@ -95,7 +96,7 @@ export class Sea {
    * @param id the ID being removed
    * @param from the ID of the bubble we want to remove it from
    */
-  async unlink(id: BubbleID, from: BubbleID): Promise<Sea> {
+  async unlink(id: BubbleID, from: BubbleID): Promise<SeaState> {
     let { bubble, newSea } = await this.lookup(from);
     newSea = newSea ?? this;
     if (!bubble) {
@@ -115,7 +116,7 @@ export class Sea {
    * @param id the ID of the Bubble to add
    * @param to the ID of the new parent Bubble
    */
-  async link(id: BubbleID, to: BubbleID): Promise<Sea> {
+  async link(id: BubbleID, to: BubbleID): Promise<SeaState> {
     let { bubble, newSea } = await this.lookup(to);
     newSea = newSea ?? this;
     if (!bubble) {
