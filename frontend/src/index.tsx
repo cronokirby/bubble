@@ -7,7 +7,9 @@ import { fromString } from "./BubbleID";
 function Application() {
   return (
     <SeaProvider>
-      <BubbleNode id={fromString("0x0")} />
+      <div className="mt-4 md:mt-6 md:container mx-auto lg:w-1/2">
+        <BubbleNode id={fromString("0x0")} />
+      </div>
     </SeaProvider>
   );
 }
