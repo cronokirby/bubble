@@ -37,7 +37,6 @@ html {
 .inline-code {
   @apply font-mono;
   @apply rounded;
-  @apply shadow-inner;
   @apply bg-gray-200;
   @apply px-1;
   font-size: 0.9em;
