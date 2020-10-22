@@ -72,6 +72,7 @@ interface State {
 interface Props {
   starting: string;
   onModify(str: string): void;
+  onEnter(): boolean;
 }
 
 /**
@@ -117,6 +118,15 @@ export default class ShowBubble extends React.Component<Props> {
     this.setState({ ...this.state, static: false });
   }
 
+  private onKeyPress(event: React.KeyboardEvent) {
+    // Enter press
+    if (event.key === 'Enter' && !event.shiftKey) {
+      if (this.props.onEnter()) {
+        event.preventDefault();
+      }
+    }
+  }
+
   render() {
     const html = this.state.static ? this.state.transformed : this.state.raw;
     return (
@@ -125,6 +135,7 @@ export default class ShowBubble extends React.Component<Props> {
         html={html}
         disabled={false}
         onChange={this.handleChange.bind(this)}
+        onKeyPress={this.onKeyPress.bind(this)}
         onBlur={this.onBlur.bind(this)}
         onFocus={this.onFocus.bind(this)}
         style={{ display: "block" }}

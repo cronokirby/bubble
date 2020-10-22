@@ -68,7 +68,9 @@ export class SeaState {
    * @param bubble the new contents to provide
    */
   async modify(id: BubbleID, bubble: Bubble): Promise<SeaState> {
+    console.log('modify', id, bubble)
     const newMap = this.map.set(id, bubble);
+    console.log('newMap', newMap.toJSON())
     return new SeaState(this.remote, newMap);
   }
 
@@ -137,9 +139,9 @@ export class SeaState {
     parent: BubbleID
   ): Promise<{ newID: BubbleID; newSea: SeaState }> {
     const newID = createID();
-    await this.modifyInner(newID, "");
-    let { bubble, newSea } = await this.lookup(parent);
-    newSea = newSea ?? this;
+    let newSea = await this.modifyInner(newID, "");
+    let { bubble, newSea: sea } = await newSea.lookup(parent);
+    newSea = newSea ?? sea;
     if (!bubble) {
       return { newID, newSea };
     }

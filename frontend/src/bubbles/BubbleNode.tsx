@@ -6,6 +6,7 @@ import ShowBubble from "./ShowBubble";
 
 interface Props {
   id: BubbleID;
+  parent?: BubbleID;
   title?: boolean;
 }
 
@@ -13,18 +14,27 @@ function Loading() {
   return <div>...</div>;
 }
 
-export default function BubbleNode({ id, title }: Props) {
+export default function BubbleNode({ id, title, parent }: Props) {
   const sea = useSea();
   const [bubble, setBubble] = React.useState(null as Bubble | null);
 
+  const onEnter = () => {
+    if (parent) {
+      sea.create(parent);
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   React.useEffect(() => {
     sea.lookup(id).then((b) => setBubble(b ?? null));
-  }, [id]);
+  }, [id, sea]);
 
   if (bubble) {
-    const children = bubble.children.map((id) => (
-      <React.Fragment key={`${id}`}>
-        <BubbleNode id={id} />
+    const children = bubble.children.map((theirID) => (
+      <React.Fragment key={`${theirID}`}>
+        <BubbleNode id={theirID} parent={id} />
       </React.Fragment>
     ));
     return (
@@ -33,6 +43,7 @@ export default function BubbleNode({ id, title }: Props) {
           <ShowBubble
             starting={bubble.inner}
             onModify={(s) => sea.modifyInner(id, s)}
+            onEnter={onEnter}
           />
         </div>
         <div className={title ? "" : "ml-4"}>{children}</div>

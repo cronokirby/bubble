@@ -40,6 +40,10 @@ interface Sea {
    * @param to the node becoming the parent
    */
   link(id: BubbleID, to: BubbleID): Promise<void>;
+  /**
+   * Create a new bubble as a parent of another.
+   */
+  create(parent: BubbleID): Promise<BubbleID>;
 }
 
 const Context = React.createContext<Sea>(null as any);
@@ -59,7 +63,10 @@ const SeaProvider: React.FunctionComponent<{}> = (props) => {
           children: [idFromString("0x1")],
         },
       ],
-      [idFromString("0x1"), { inner: "The first Child", children: [idFromString("0x2")] }],
+      [
+        idFromString("0x1"),
+        { inner: "The first Child", children: [idFromString("0x2")] },
+      ],
       [idFromString("0x2"), { inner: "The second Child", children: [] }]
     )
   );
@@ -83,6 +90,11 @@ const SeaProvider: React.FunctionComponent<{}> = (props) => {
     link: async (id: BubbleID, to: BubbleID) => {
       const newSea = await seaState.link(id, to);
       setSeaState(newSea);
+    },
+    create: async (parent: BubbleID) => {
+      const { newID, newSea } = await seaState.create(parent);
+      setSeaState(newSea);
+      return newID;
     },
   };
 
