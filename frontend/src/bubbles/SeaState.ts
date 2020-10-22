@@ -1,4 +1,4 @@
-import { BubbleID } from "BubbleID";
+import { BubbleID, createID } from "../BubbleID";
 import { Map } from "immutable";
 import { Bubble, BubbleInner, parse } from "./bubble";
 import { RemoteSea } from "./RemoteSea";
@@ -126,5 +126,27 @@ export class SeaState {
       ...bubble,
       children: [...bubble.children.filter((x) => x !== id), id],
     });
+  }
+
+  /**
+   * Create a new Bubble attached to a given parent
+   *
+   * @param parent the parent to attach to
+   */
+  async create(
+    parent: BubbleID
+  ): Promise<{ newID: BubbleID; newSea: SeaState }> {
+    const newID = createID();
+    await this.modifyInner(newID, "");
+    let { bubble, newSea } = await this.lookup(parent);
+    newSea = newSea ?? this;
+    if (!bubble) {
+      return { newID, newSea };
+    }
+    newSea = await newSea.modify(parent, {
+      ...bubble,
+      children: [...bubble.children, newID],
+    });
+    return { newID, newSea };
   }
 }

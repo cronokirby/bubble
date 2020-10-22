@@ -1,4 +1,4 @@
-import { BubbleID, fromString } from "../BubbleID";
+import { BubbleID, idFromString } from "../BubbleID";
 import React, { Context } from "react";
 import { Bubble, BubbleInner } from "./bubble";
 import { SeaState } from "./SeaState";
@@ -53,14 +53,14 @@ const SeaProvider: React.FunctionComponent<{}> = (props) => {
     SeaState.using(
       new NoRemoteSea(),
       [
-        fromString("0x0"),
+        idFromString("0x0"),
         {
           inner: "Null Page",
-          children: [fromString("0x1")],
+          children: [idFromString("0x1")],
         },
       ],
-      [fromString("0x1"), { inner: "The first Child", children: [fromString("0x2")] }],
-      [fromString("0x2"), { inner: "The second Child", children: [] }]
+      [idFromString("0x1"), { inner: "The first Child", children: [idFromString("0x2")] }],
+      [idFromString("0x2"), { inner: "The second Child", children: [] }]
     )
   );
 

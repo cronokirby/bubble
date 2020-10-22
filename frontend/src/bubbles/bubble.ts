@@ -1,4 +1,4 @@
-import { BubbleID, fromString as bubbleIDFromString } from "../BubbleID";
+import { BubbleID, idFromString as idFromString } from "../BubbleID";
 
 enum TokenType {
   OpenParens,
@@ -215,7 +215,7 @@ class Parser {
     const inner = this.bubbleInner();
     const children: BubbleID[] = [];
     while (this.match(TokenType.BubbleID)) {
-      children.push(bubbleIDFromString(this.prev().text!));
+      children.push(idFromString(this.prev().text!));
     }
     this.expect(TokenType.CloseParens);
     return { inner, children };

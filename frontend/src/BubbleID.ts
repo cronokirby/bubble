@@ -11,7 +11,7 @@ export type BubbleID = bigint & { readonly __tag: unique symbol };
  *
  * @param str the string
  */
-export function fromString(str: string): BubbleID {
+export function idFromString(str: string): BubbleID {
   return BigInt(str) as BubbleID;
 }
 
@@ -20,7 +20,7 @@ export function fromString(str: string): BubbleID {
  *
  * @param ref the reference to a bubble
  */
-export function getDate(ref: BubbleID): Date {
+export function getIDDate(ref: BubbleID): Date {
   const r = ref as bigint;
   return new Date(Number((r >> BigInt(4)) / BigInt(1000)));
 }
@@ -28,7 +28,7 @@ export function getDate(ref: BubbleID): Date {
 /**
  * Create a new Bubble ID from the current time and some randomness.
  */
-export function create(): BubbleID {
+export function createID(): BubbleID {
   const datePart = BigInt(new Date().getTime());
   const randPart = BigInt(Math.floor(Math.random() * 0xf));
   return (datePart | randPart) as BubbleID;

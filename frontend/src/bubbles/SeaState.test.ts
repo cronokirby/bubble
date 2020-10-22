@@ -2,9 +2,9 @@ import { SeaState } from "./SeaState";
 import { NoRemoteSea } from "./RemoteSea";
 import * as BubbleID from "../BubbleID";
 
-const id1 = BubbleID.fromString("0x1");
+const id1 = BubbleID.idFromString("0x1");
 const bubble1 = { inner: "1", children: [] };
-const id2 = BubbleID.fromString("0x2");
+const id2 = BubbleID.idFromString("0x2");
 const bubble2 = { inner: "2", children: [] };
 
 test("modify -> lookup should return the modification", async () => {
@@ -18,6 +18,12 @@ test("creating a sea with bubbles lets us look them up", async () => {
   let sea = SeaState.using(new NoRemoteSea(), [id1, bubble1], [id2, bubble2]);
   expect((await sea.lookup(id1)).bubble).toEqual(bubble1);
   expect((await sea.lookup(id2)).bubble).toEqual(bubble2);
+});
+
+test("adding bubbles works as expected", async () => {
+  let sea = SeaState.using(new NoRemoteSea(), [id1, bubble1]);
+  const { newID, newSea } = await sea.create(id1);
+  expect((await newSea.lookup(id1)).bubble?.children).toEqual([newID]);
 });
 
 test("linking works as expected", async () => {
