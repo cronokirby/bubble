@@ -102,6 +102,10 @@ export default class ShowBubble extends React.Component<Props> {
     this.setState({ ...this.state, raw: event.target.value });
   }
 
+  componentDidMount() {
+    this.ref.current?.focus();
+  }
+
   // The user has given focus to something else, so we can transform
   // the text they've edited, and declare this Bubble to now be static.
   private onBlur() {
@@ -120,7 +124,7 @@ export default class ShowBubble extends React.Component<Props> {
 
   private onKeyPress(event: React.KeyboardEvent) {
     // Enter press
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       if (this.props.onEnter()) {
         event.preventDefault();
       }
