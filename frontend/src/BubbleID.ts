@@ -24,3 +24,13 @@ export function getDate(ref: BubbleID): Date {
   const r = ref as bigint;
   return new Date(Number((r >> BigInt(4)) / BigInt(1000)));
 }
+
+/**
+ * Create a new Bubble ID from the current time and some randomness.
+ * 
+ */
+export function create(): BubbleID {
+  const datePart = BigInt(new Date().getTime());
+  const randPart = BigInt(Math.floor(Math.random() * 0xF));
+  return (datePart | randPart) as BubbleID;
+}
