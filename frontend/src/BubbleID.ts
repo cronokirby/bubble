@@ -27,10 +27,9 @@ export function getDate(ref: BubbleID): Date {
 
 /**
  * Create a new Bubble ID from the current time and some randomness.
- * 
  */
 export function create(): BubbleID {
   const datePart = BigInt(new Date().getTime());
-  const randPart = BigInt(Math.floor(Math.random() * 0xF));
+  const randPart = BigInt(Math.floor(Math.random() * 0xf));
   return (datePart | randPart) as BubbleID;
 }
