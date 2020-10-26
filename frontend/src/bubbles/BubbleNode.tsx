@@ -14,11 +14,11 @@ function Loading() {
   return <div>...</div>;
 }
 
+type BubbleState = { loading: true } | { loading: false; bubble?: Bubble };
+
 export default function BubbleNode({ id, title, parent }: Props) {
   const sea = useSea();
-  const [bubble, setBubble] = React.useState(
-    null as Bubble | null | "nobubble"
-  );
+  const [state, setState] = React.useState<BubbleState>({ loading: true });
 
   const onEnter = () => {
     if (parent) {
@@ -30,12 +30,13 @@ export default function BubbleNode({ id, title, parent }: Props) {
   };
 
   React.useEffect(() => {
-    sea.lookup(id).then((b) => setBubble(b ?? "nobubble"));
+    sea.lookup(id).then((b) => setState({ loading: false, bubble: b }));
   }, [id, sea]);
 
-  if (bubble === "nobubble") {
-    return <></>;
-  } else if (bubble) {
+  if (state.loading) {
+    return <Loading />;
+  } else if (state.bubble) {
+    const bubble = state.bubble;
     const children = bubble.children.map((theirID) => (
       <React.Fragment key={`${theirID}`}>
         <BubbleNode id={theirID} parent={id} />
@@ -54,6 +55,6 @@ export default function BubbleNode({ id, title, parent }: Props) {
       </div>
     );
   } else {
-    return <Loading />;
+    return <></>;
   }
 }
