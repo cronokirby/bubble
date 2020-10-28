@@ -1,4 +1,4 @@
-import { SeaState } from "./SeaState";
+import { SeaCache } from "./SeaCache";
 import { NoRemoteSea } from "./RemoteSea";
 import * as BubbleID from "../BubbleID";
 import Sea from "./Sea";
@@ -12,8 +12,8 @@ const bubble2 = { inner: "2", children: [] };
 function createSea(...pairs: [BubbleID.BubbleID, Bubble][]): () => Sea {
   // It's important to use an object here so that we can have a mutable reference
   // that we can actually modify.
-  const container = { state: SeaState.using(new NoRemoteSea(), ...pairs) };
-  const setState = (s: SeaState) => {
+  const container = { state: SeaCache.using(new NoRemoteSea(), ...pairs) };
+  const setState = (s: SeaCache) => {
     container.state = s;
   };
   return () => new Sea(container.state, setState);

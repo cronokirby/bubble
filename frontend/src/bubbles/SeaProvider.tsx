@@ -2,7 +2,7 @@ import React, { Context } from "react";
 import { idFromString } from "../BubbleID";
 import { NoRemoteSea } from "./RemoteSea";
 import Sea from "./Sea";
-import { SeaState } from "./SeaState";
+import { SeaCache } from "./SeaCache";
 
 const Context = React.createContext<Sea>(null as any);
 
@@ -12,7 +12,7 @@ export function useSea() {
 
 const SeaProvider: React.FunctionComponent<{}> = (props) => {
   const [state, setState] = React.useState(
-    SeaState.using(
+    SeaCache.using(
       new NoRemoteSea(),
       [
         idFromString("0x0"),
