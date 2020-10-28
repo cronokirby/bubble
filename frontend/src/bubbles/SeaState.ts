@@ -68,9 +68,7 @@ export class SeaState {
    * @param bubble the new contents to provide
    */
   async modify(id: BubbleID, bubble: Bubble): Promise<SeaState> {
-    console.log('modify', id, bubble)
     const newMap = this.map.set(id, bubble);
-    console.log('newMap', newMap.toJSON())
     return new SeaState(this.remote, newMap);
   }
 

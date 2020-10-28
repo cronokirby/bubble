@@ -1,14 +1,14 @@
 import { BubbleID } from "BubbleID";
-import { BubbleInner } from "./bubble";
+import { Bubble, BubbleInner } from "./bubble";
 import { SeaState } from "./SeaState";
 
 /**
  * Represents a sea of nodes we can interact with.
- * 
+ *
  * This gives us an interface towards the state of the graph of nodes,
  * or bubbles, as we call them here. We can lookup different bubbles by
  * their ID. We can also modify, or create bubbles.
- * 
+ *
  * Various shortcut operations built on this primitives, such as
  * creating links between two nodes, and other things like that.
  */
@@ -24,6 +24,11 @@ export default class Sea {
       this.setState(res.newSea);
     }
     return res.bubble;
+  }
+
+  async modify(id: BubbleID, bubble: Bubble) {
+    const newSea = await this.state.modify(id, bubble);
+    this.setState(newSea);
   }
 
   async modifyInner(id: BubbleID, inner: BubbleInner) {
