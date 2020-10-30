@@ -1,6 +1,7 @@
-import { BubbleID, createID, idFromString } from "../BubbleID";
+import { BubbleID, createID } from "../BubbleID";
 import { Bubble, BubbleInner } from "./bubble";
-import { SeaCache } from "./SeaCache";
+import SeaCache from "./cache/SeaCache";
+import { RemoteSea } from "./RemoteSea";
 
 /**
  * Represents a sea of nodes we can interact with.
@@ -17,10 +18,7 @@ import { SeaCache } from "./SeaCache";
  * to the underlying sea.
  */
 export default class Sea {
-  constructor(
-    private state: SeaCache,
-    private setState: (s: SeaCache) => void
-  ) {}
+  constructor(private remote: RemoteSea, private cache: SeaCache) {}
 
   /**
    * Look up a given bubble using its Identifier.
@@ -28,12 +26,16 @@ export default class Sea {
    * @param id the identifier for this bubble
    * @returns undefined if said bubble does not exist
    */
-  async lookup(id: BubbleID): Promise<Bubble | undefined> {
-    const res = await this.state.lookup(id);
-    if (res.newSea) {
-      this.setState(res.newSea);
+  async lookup(id: BubbleID): Promise<Bubble | null> {
+    const cached = this.cache.lookup(id);
+    if (cached) {
+      return cached;
     }
-    return res.bubble;
+    const real = await this.remote.lookup(id);
+    if (real) {
+      this.cache.modify(id, real);
+    }
+    return real ?? null;
   }
 
   /**
@@ -43,8 +45,7 @@ export default class Sea {
    * @param bubble the new state of that bubble
    */
   async modify(id: BubbleID, bubble: Bubble) {
-    const newSea = await this.state.modify(id, bubble);
-    this.setState(newSea);
+    this.cache.modify(id, bubble);
   }
 
   /**
@@ -110,11 +111,12 @@ export default class Sea {
    */
   async create(parent?: BubbleID): Promise<BubbleID> {
     const newID = createID();
-    // If you don't do things in this order, things are not correct
-    await this.modifyInner(newID, "");
+    // We can kick this off in parallel
+    const modifyPromise = this.modifyInner(newID, "");
     if (parent) {
       await this.link(newID, parent);
     }
+    await modifyPromise;
     return newID;
   }
 }

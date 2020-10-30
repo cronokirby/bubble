@@ -1,8 +1,9 @@
-import { SeaCache } from "./SeaCache";
 import { NoRemoteSea } from "./RemoteSea";
 import * as BubbleID from "../BubbleID";
 import Sea from "./Sea";
 import { Bubble } from "./bubble";
+import { Map } from "immutable";
+import ReactSeaCache, { BubbleMap } from "./cache/ReactSeaCache";
 
 const id1 = BubbleID.idFromString("0x1");
 const bubble1 = { inner: "1", children: [] };
@@ -12,11 +13,13 @@ const bubble2 = { inner: "2", children: [] };
 function createSea(...pairs: [BubbleID.BubbleID, Bubble][]): () => Sea {
   // It's important to use an object here so that we can have a mutable reference
   // that we can actually modify.
-  const container = { state: SeaCache.using(new NoRemoteSea(), ...pairs) };
-  const setState = (s: SeaCache) => {
-    container.state = s;
+  const container = { state: Map(pairs) };
+  return () => {
+    const cache = new ReactSeaCache(container.state, (f) => {
+      container.state = f(container.state);
+    });
+    return new Sea(new NoRemoteSea(), cache);
   };
-  return () => new Sea(container.state, setState);
 }
 
 test("modify -> lookup should return the modification", async () => {

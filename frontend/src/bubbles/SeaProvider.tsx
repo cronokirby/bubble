@@ -2,7 +2,7 @@ import React, { Context } from "react";
 import { idFromString } from "../BubbleID";
 import { NoRemoteSea } from "./RemoteSea";
 import Sea from "./Sea";
-import { SeaCache } from "./SeaCache";
+import { SeaCache } from "./cache/SeaCache";
 
 const Context = React.createContext<Sea>(null as any);
 

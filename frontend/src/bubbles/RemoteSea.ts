@@ -1,4 +1,5 @@
 import type { BubbleID } from "../BubbleID";
+import { Bubble } from "./bubble";
 
 /**
  * Represents some service capable of working with Bubbles remotely.
@@ -16,7 +17,7 @@ export interface RemoteSea {
    * @param id the ID of the bubble to lookup
    * @return the string contents of that Bubble, or null if nothing was found
    */
-  lookup(id: BubbleID): Promise<string | null>;
+  lookup(id: BubbleID): Promise<Bubble | null>;
 }
 
 /**
