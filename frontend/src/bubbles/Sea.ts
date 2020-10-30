@@ -28,11 +28,11 @@ export default class Sea {
    */
   async lookup(id: BubbleID): Promise<Bubble | null> {
     const cached = this.cache.lookup(id);
-    if (cached) {
+    if (cached !== null) {
       return cached;
     }
     const real = await this.remote.lookup(id);
-    if (real) {
+    if (real !== null) {
       this.cache.modify(id, real);
     }
     return real ?? null;
@@ -58,7 +58,7 @@ export default class Sea {
    */
   async modifyInner(id: BubbleID, inner: BubbleInner) {
     const bubble = await this.lookup(id);
-    if (bubble) {
+    if (bubble !== null) {
       await this.modify(id, { ...bubble, inner });
     } else {
       await this.modify(id, { inner, children: [] });
@@ -75,7 +75,7 @@ export default class Sea {
    */
   async unlink(id: BubbleID, parent: BubbleID) {
     const bubble = await this.lookup(parent);
-    if (!bubble) {
+    if (bubble === null) {
       return;
     }
     await this.modify(parent, {
@@ -95,7 +95,7 @@ export default class Sea {
    */
   async link(id: BubbleID, parent: BubbleID) {
     const bubble = await this.lookup(parent);
-    if (!bubble) {
+    if (bubble === null) {
       return;
     }
     await this.modify(parent, {
@@ -113,7 +113,7 @@ export default class Sea {
     const newID = createID();
     // We can kick this off in parallel
     const modifyPromise = this.modifyInner(newID, "");
-    if (parent) {
+    if (parent !== undefined) {
       await this.link(newID, parent);
     }
     await modifyPromise;
@@ -134,7 +134,7 @@ export default class Sea {
   async unindent(id: BubbleID, parent: BubbleID, grandparent: BubbleID) {
     await this.unlink(id, parent);
     const grandparentBubble = await this.lookup(grandparent);
-    if (!grandparentBubble) {
+    if (grandparentBubble === null) {
       return;
     }
     // Place this bubble right after its parent

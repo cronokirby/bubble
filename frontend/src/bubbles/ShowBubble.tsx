@@ -73,6 +73,8 @@ interface Props {
   starting: string;
   onModify(str: string): void;
   onEnter(): boolean;
+  onIndent(): boolean;
+  onUnIndent(): boolean;
 }
 
 /**
@@ -122,11 +124,20 @@ export default class ShowBubble extends React.Component<Props> {
     this.setState({ ...this.state, static: false });
   }
 
-  private onKeyPress(event: React.KeyboardEvent) {
+  private onKeyDown(event: React.KeyboardEvent) {
     // Enter press
     if (event.key === "Enter" && !event.shiftKey) {
       if (this.props.onEnter()) {
         event.preventDefault();
+      }
+    } else if (event.key === "Tab") {
+      event.preventDefault();
+      if (event.shiftKey) {
+        this.onBlur();
+        this.props.onUnIndent();
+      } else {
+        this.onBlur();
+        this.props.onIndent();
       }
     }
   }
@@ -139,7 +150,7 @@ export default class ShowBubble extends React.Component<Props> {
         html={html}
         disabled={false}
         onChange={this.handleChange.bind(this)}
-        onKeyPress={this.onKeyPress.bind(this)}
+        onKeyDown={this.onKeyDown.bind(this)}
         onBlur={this.onBlur.bind(this)}
         onFocus={this.onFocus.bind(this)}
         style={{ display: "block" }}
