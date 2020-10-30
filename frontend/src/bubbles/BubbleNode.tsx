@@ -14,7 +14,9 @@ function Loading() {
   return <div>...</div>;
 }
 
-type BubbleState = { loading: true } | { loading: false; bubble?: Bubble };
+type BubbleState =
+  | { loading: true }
+  | { loading: false; bubble: Bubble | null };
 
 export default function BubbleNode({ id, title, parent }: Props) {
   const sea = useSea();
