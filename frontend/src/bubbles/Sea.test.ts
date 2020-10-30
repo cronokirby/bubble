@@ -63,3 +63,20 @@ test.only("indenting works as expected", async () => {
   expect(await sea().lookup(id1)).toEqual({ ...bubble1, children: [id2] });
   expect(await sea().lookup(id3)).toEqual({ ...bubble3, children: [id1] });
 });
+
+test.only("unindenting works as expected", async () => {
+  const id4 = BubbleID.idFromString("0x4");
+  const bubble4 = { inner: "4", children: [] };
+  const id5 = BubbleID.idFromString("0x5");
+  const bubble5 = { inner: "5", children: [id4] };
+  const id6 = BubbleID.idFromString("0x6");
+  const id7 = BubbleID.idFromString("0x7");
+  const bubble7 = { inner: "7", children: [id5, id6] };
+  const sea = createSea([id4, bubble4], [id5, bubble5], [id7, bubble7]);
+  await sea().unindent(id4, id5, id7);
+  expect(await sea().lookup(id7)).toEqual({
+    ...bubble7,
+    children: [id5, id4, id6],
+  });
+  expect(await sea().lookup(id5)).toEqual({ ...bubble5, children: [] });
+});

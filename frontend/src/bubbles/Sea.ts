@@ -130,4 +130,21 @@ export default class Sea {
   async indent(id: BubbleID, senpai: BubbleID, parent: BubbleID) {
     await Promise.all([this.unlink(id, parent), this.link(id, senpai)]);
   }
+
+  async unindent(id: BubbleID, parent: BubbleID, grandparent: BubbleID) {
+    await this.unlink(id, parent);
+    const grandparentBubble = await this.lookup(grandparent);
+    if (!grandparentBubble) {
+      return;
+    }
+    // Place this bubble right after its parent
+    const children = [];
+    for (const child of grandparentBubble.children) {
+      children.push(child);
+      if (child === parent) {
+        children.push(id);
+      }
+    }
+    await this.modify(grandparent, { ...grandparentBubble, children });
+  }
 }
