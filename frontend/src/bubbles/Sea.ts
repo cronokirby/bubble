@@ -132,7 +132,6 @@ export default class Sea {
   }
 
   async unindent(id: BubbleID, parent: BubbleID, grandparent: BubbleID) {
-    await this.unlink(id, parent);
     const grandparentBubble = await this.lookup(grandparent);
     if (grandparentBubble === null) {
       return;
@@ -146,5 +145,6 @@ export default class Sea {
       }
     }
     await this.modify(grandparent, { ...grandparentBubble, children });
+    await this.unlink(id, parent);
   }
 }
