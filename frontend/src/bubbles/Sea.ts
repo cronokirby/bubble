@@ -119,4 +119,15 @@ export default class Sea {
     await modifyPromise;
     return newID;
   }
+
+  /**
+   * Indent a bubble, so that it becomes a child of the one directly above it, i.e. the senpai
+   *
+   * @param id the bubble to move
+   * @param senpai the child bubble directly above this one
+   * @param parent the bubble containing both the moving one, and the senpai
+   */
+  async indent(id: BubbleID, senpai: BubbleID, parent: BubbleID) {
+    await Promise.all([this.unlink(id, parent), this.link(id, senpai)]);
+  }
 }

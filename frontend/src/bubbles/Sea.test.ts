@@ -1,9 +1,9 @@
-import { NoRemoteSea } from "./RemoteSea";
-import * as BubbleID from "../BubbleID";
-import Sea from "./Sea";
-import { Bubble } from "./bubble";
 import { Map } from "immutable";
-import ReactSeaCache, { BubbleMap } from "./cache/ReactSeaCache";
+import * as BubbleID from "../BubbleID";
+import { Bubble } from "./bubble";
+import ReactSeaCache from "./cache/ReactSeaCache";
+import { NoRemoteSea } from "./RemoteSea";
+import Sea from "./Sea";
 
 const id1 = BubbleID.idFromString("0x1");
 const bubble1 = { inner: "1", children: [] };
@@ -53,4 +53,13 @@ test("unlinking works as expected", async () => {
   await sea().link(id1, id2);
   await sea().unlink(id1, id2);
   expect(await sea().lookup(id2)).toEqual(bubble2);
+});
+
+test.only("indenting works as expected", async () => {
+  const id3 = BubbleID.idFromString("0x3");
+  const bubble3 = { inner: "3", children: [id1, id2] };
+  const sea = createSea([id1, bubble1], [id2, bubble2], [id3, bubble3]);
+  await sea().indent(id2, id1, id3);
+  expect(await sea().lookup(id1)).toEqual({ ...bubble1, children: [id2] });
+  expect(await sea().lookup(id3)).toEqual({ ...bubble3, children: [id1] });
 });
