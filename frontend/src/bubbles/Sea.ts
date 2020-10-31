@@ -131,6 +131,13 @@ export default class Sea {
     await Promise.all([this.unlink(id, parent), this.link(id, senpai)]);
   }
 
+  /**
+   * Unindent a given bubble
+   * 
+   * @param id the ID of the bubble to move
+   * @param parent the parent of this bubble
+   * @param grandparent the grandparent of this bubble
+   */
   async unindent(id: BubbleID, parent: BubbleID, grandparent: BubbleID) {
     const grandparentBubble = await this.lookup(grandparent);
     if (grandparentBubble === null) {
