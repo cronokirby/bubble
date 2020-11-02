@@ -3,26 +3,42 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
 )
 
-type modifyBubbleT struct {
+// The map of bubbles we use for our mock API
+var bubbles = make(map[string]string)
+
+// BubbleData represents the information we provide when looking up or modifying a bubble
+type BubbleData struct {
 	Bubble string
+}
+
+func lookupBubble(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	bubble, ok := bubbles[id]
+	if !ok {
+		w.WriteHeader(404)
+		w.Write([]byte(`{"bubble": null}`))
+		return
+	}
+	data := BubbleData{bubble}
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(data)
 }
 
 func modifyBubble(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	decoder := json.NewDecoder(r.Body)
-	var data modifyBubbleT
+	var data BubbleData
 	if err := decoder.Decode(&data); err != nil {
 		http.Error(w, http.StatusText(400), 400)
 		return
 	}
-	fmt.Println(id, data)
+	bubbles[id] = data.Bubble
 	w.WriteHeader(200)
 	w.Write([]byte("{}"))
 }
@@ -36,6 +52,7 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir(*dir))
 	r.Post("/api/bubble/{id}", modifyBubble)
+	r.Get("/api/bubble/{id}", lookupBubble)
 	r.Handle("/*", fileServer)
 
 	log.Printf("Listening on %s\n", *addr)
