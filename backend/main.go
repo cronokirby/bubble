@@ -1,22 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"log"
 	"net/http"
 )
 
-const dir = "../frontend/dist"
-const addr = "127.0.0.1:3000"
-
 func main() {
-	fmt.Println("Hello World?")
+	dir := flag.String("dir", "../frontend/dist", "the directory for static assets")
+	addr := flag.String("addr", "127.0.0.1:4000", "the address to listen on")
+	flag.Parse()
 
-	server := http.FileServer(http.Dir(dir))
+	server := http.FileServer(http.Dir(*dir))
 	http.Handle("/", server)
 
-	log.Printf("Listening on %s\n", addr)
-	err := http.ListenAndServe(addr, nil)
+	log.Printf("Listening on %s\n", *addr)
+	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
